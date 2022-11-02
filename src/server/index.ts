@@ -15,6 +15,15 @@ const app = express()
 const server = createServer(app)
 const io = new Server(server)
 
+// read sjp file words
+import fs from 'fs'
+var array = fs
+  .readFileSync(__dirname + '/sjp.txt')
+  .toString()
+  .split('\n')
+
+const wordsSet = new Set(array)
+
 nextApp
   .prepare()
   .then(() => {

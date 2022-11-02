@@ -6,8 +6,3 @@
   @apply ;
 } */
 
-@layer base {
-  html {
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  }
-}
