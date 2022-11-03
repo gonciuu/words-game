@@ -24,7 +24,7 @@ const Button: FC<ButtonProps> = ({ children, className, variant = 'primary' }) =
     return (
       <button
         className={clsx(
-          'px-4 py-2 bg-gray-800 outline-none rounded-lg text-white active:shadow-none hover:bg-gray-700 focus:bg-gray-700 focus:ring-2 focus:ring-primary-400  disabled:bg-gray-400/80 disabled:shadow-none disabled:cursor-not-allowed transition-colors duration-300 border border-primary-500',
+          'px-4 py-2 bg-transparent outline-none rounded-lg text-white active:shadow-none  focus:ring-2 focus:ring-primary-400  disabled:bg-gray-400/80 disabled:shadow-none disabled:cursor-not-allowed transition-colors duration-300 border border-primary-500',
           className
         )}
       >

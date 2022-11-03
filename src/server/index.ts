@@ -34,10 +34,13 @@ nextApp
       const lettersCountInt = parseInt(lettersCount)
 
       const randomWord = array[Math.floor(Math.random() * array.length)]
+      let randomStartIndex = Math.floor(Math.random() * randomWord.length)
 
-      const randomStartNumber = Math.floor(Math.random() * randomWord.length - lettersCountInt)
-      const randomEndNumber = randomStartNumber + lettersCountInt
-      const randomLetters = randomWord.slice(randomStartNumber, randomEndNumber)
+      while (randomStartIndex + lettersCountInt > randomWord.length) {
+        randomStartIndex--
+      }
+      const randomEndIndex = randomStartIndex + lettersCountInt
+      const randomLetters = randomWord.slice(randomStartIndex, randomEndIndex)
 
       return res.send(randomLetters)
     })
@@ -52,6 +55,7 @@ nextApp
     })
 
     io.on('connection', socket => {
+      console.log('a user connected')
       socket.on('message', (message: string) => {
         console.log('message', message)
       })

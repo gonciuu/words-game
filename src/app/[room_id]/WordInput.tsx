@@ -40,9 +40,13 @@ const WordInput = () => {
   }, [])
 
   return (
-    <div className="w-[300px]">
-      <div>{letters}</div>
-      <Input placeholder="Podaj słowo" onEnter={onEnter} />
+    <div className="w-full px-4 h-[100px] fixed bottom-0 left-1/2 translate-x-[-50%] bg-gray-900 flex items-center justify-center">
+      <Input
+        placeholder="Podaj słowo"
+        onEnter={onEnter}
+        ref={inputRef}
+        className="md:w-1/3 w-full text-[20px]"
+      />
     </div>
   )
 }

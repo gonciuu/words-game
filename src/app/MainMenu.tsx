@@ -5,7 +5,7 @@ import Input from '@/components/common/Input'
 import Label from '@/components/common/Label'
 const MainMenu = () => {
   return (
-    <div>
+    <div className="p-4">
       <h1 className="text-5xl font-semibold">Gra słowna</h1>
       <h4 className="text-xl mt-4">Wymyśl słowo zawierające podane litery i wygrywaj</h4>
       <div className="mt-16 border rounded-lg p-6 border-gray-400">
