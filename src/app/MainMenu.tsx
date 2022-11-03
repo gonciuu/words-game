@@ -1,8 +1,8 @@
+import React from 'react'
+
 import Button from '@/components/common/Button'
 import Input from '@/components/common/Input'
 import Label from '@/components/common/Label'
-import React from 'react'
-
 const MainMenu = () => {
   return (
     <div>

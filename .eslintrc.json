@@ -17,13 +17,15 @@
     "@typescript-eslint/no-use-before-define": "error",
     "@typescript-eslint/no-unused-expressions": "error",
     "@typescript-eslint/no-useless-constructor": "error",
-    "@typescript-eslint/no-shadow": "error"
+    "@typescript-eslint/no-shadow": "error",
+    "@next/next/no-html-link-for-pages": ["error", "src/app/"]
   },
   "parserOptions": {
     "ecmaVersion": 2020,
     "sourceType": "module",
     "ecmaFeatures": {
-      "jsx": true
+      "jsx": true,
+      "tsx": true
     }
   },
   "settings": {
@@ -66,7 +68,6 @@
         "@typescript-eslint/no-unsafe-member-access": "error",
         "@typescript-eslint/no-unsafe-return": "error",
         "@typescript-eslint/no-inferrable-types": "error",
-        "@typescript-eslint/no-misused-promises": "error",
         "@typescript-eslint/no-floating-promises": "error",
         "@typescript-eslint/no-unnecessary-type-assertion": "error",
         "@typescript-eslint/no-unnecessary-condition": "error",

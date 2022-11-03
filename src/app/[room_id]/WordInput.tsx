@@ -1,29 +1,42 @@
 'use client'
 
-import Input from '@/components/common/Input'
-import axiosClient from '@/lib/axiosClient'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { createRef } from 'react'
 
+import Input from '@/components/common/Input'
+import axiosClient from '@/lib/axiosClient'
+
 const WordInput = () => {
-  const inputRef = createRef()
+  const inputRef = createRef<HTMLInputElement>()
+  const [letters, setLetters] = useState<string>('')
 
   const fetchRandomLetters = async () => {
     const response = await axiosClient.get<string>('/random-letters/3')
     setLetters(response.data)
   }
-  const [letters, setLetters] = useState<string>('')
+
   const onEnter = async (message: string) => {
     const res = await axiosClient.post<boolean>('/has-word', { word: message })
     if (res.data) {
-      inputRef.current.value = ''
-      fetchRandomLetters()
+      if (inputRef.current) {
+        inputRef.current.value = ''
+      }
+
+      await fetchRandomLetters()
     } else {
-      inputRef.current.value = ''
+      if (inputRef.current) {
+        inputRef.current.value = ''
+      }
     }
   }
   useEffect(() => {
     fetchRandomLetters()
+      .then(e => {
+        console.log(e)
+      })
+      .catch(e => {
+        console.log(e)
+      })
   }, [])
 
   return (

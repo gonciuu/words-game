@@ -1,9 +1,10 @@
+import fs from 'fs'
 import { createServer } from 'http'
 
+import bodyParser from 'body-parser'
 import express from 'express'
 import next from 'next'
 import { Server } from 'socket.io'
-import bodyParser from 'body-parser'
 const dev = process.env.NODE_ENV !== 'production'
 
 const nextApp = next({ dev })
@@ -11,21 +12,19 @@ const nextHandler = nextApp.getRequestHandler()
 const port = parseInt(process.env.PORT as string, 10) || 3000
 
 const app = express()
-var jsonParser = bodyParser.json()
+const jsonParser = bodyParser.json()
 app.use(jsonParser)
 
 const server = createServer(app)
 const io = new Server(server)
 
 // read sjp file words
-import fs from 'fs'
-var array = fs
+const array = fs
   .readFileSync(__dirname + '/sjp.txt')
   .toString()
   .split('\n')
 
 const wordsSet = new Set(array)
-const delay = (ms: number) => new Promise(res => setTimeout(res, ms))
 
 nextApp
   .prepare()
@@ -44,7 +43,7 @@ nextApp
     })
 
     app.post('/has-word', async (req, res) => {
-      const { word } = req.body
+      const { word } = req.body as { word: string }
       if (!word || word.length < 3) {
         return res.send(false)
       }

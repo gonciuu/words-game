@@ -1,14 +1,17 @@
 'use client'
-import clsx from 'clsx'
-import { type } from 'os'
+
 import React, { FC } from 'react'
 import { forwardRef } from 'react'
 import { HTMLInputTypeAttribute } from 'react'
 
+import clsx from 'clsx'
+
 type InputProps = {
   className?: string
   placeholder?: string
+
   required?: boolean
+
   type?: HTMLInputTypeAttribute | undefined
   onEnter?: (message: string) => void
 }
