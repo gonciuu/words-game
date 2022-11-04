@@ -16,7 +16,7 @@ const PlayerCard: FC<PlayerCardProps> = ({ name, transform }) => {
       )}
       style={{ transform }}
     >
-      <span className="text-center black w-[150px] overflow-hidden whitespace-nowrap text-ellipsis text-sm font-medium">
+      <span className="text-center  block w-[150px] overflow-hidden whitespace-nowrap text-ellipsis text-sm font-medium">
         {name}
       </span>
       <Image
@@ -26,7 +26,7 @@ const PlayerCard: FC<PlayerCardProps> = ({ name, transform }) => {
         width={40}
         height={40}
       />
-      <span className="text-center black w-[150px] overflow-hidden whitespace-nowrap text-ellipsis text-sm font-medium ">
+      <span className="text-center block w-[150px] overflow-hidden whitespace-nowrap text-ellipsis text-sm font-medium ">
         KOT
       </span>
     </div>

@@ -55,7 +55,7 @@ nextApp
     })
 
     io.on('connection', socket => {
-      console.log('a user connected')
+      console.log('a user connected', socket.id)
       socket.on('message', (message: string) => {
         console.log('message', message)
       })

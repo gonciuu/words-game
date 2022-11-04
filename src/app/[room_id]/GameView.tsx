@@ -4,12 +4,15 @@ import React, { useEffect, useState } from 'react'
 
 import clsx from 'clsx'
 import Image from 'next/image'
+import { io } from 'socket.io-client'
 
 import PlayerCard from './PlayerCard'
 
 const circleSize = `h-[250px] w-[250px]`
 const circleSizeMd = `md:h-[500px] md:w-[500px]`
 const circleSizeSm = `sm:h-[300px] sm:w-[300px]`
+
+const socket = io()
 
 const GameView = () => {
   const [currentCircleWidth, setCurrentCircleWidth] = useState<number>(250)
@@ -45,6 +48,10 @@ const GameView = () => {
   const step = (2 * Math.PI) / players.length
   const curPlayer = 1
   const onePlayerRotateStep = 360 / players.length
+
+  socket.on('connect', () => {
+    console.log('connected')
+  })
   return (
     <div>
       <div className="w-full h-[calc(100vh-100px)]  flex items-center justify-center flex-col">
