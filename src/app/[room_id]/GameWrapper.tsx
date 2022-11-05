@@ -3,16 +3,14 @@ import React, { useEffect, useState } from 'react'
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { io, Socket } from 'socket.io-client'
 
 import Button from '@/components/common/Button'
 import EnterNicknameModal from '@/components/common/EnterNicknameModal'
 import useGame from '@/hooks/useGame'
+import { socket } from '@/lib/socketClient'
 import { Game, GameState } from '@/types/game'
-import { ClientToServerEvents, ServerToClientEvents } from '@/types/socket'
 
 import GameView from './GameView'
-const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({ multiplex: false })
 
 const GameWrapper = () => {
   const gameId = usePathname().replace('/', '')

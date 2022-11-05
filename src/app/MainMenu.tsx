@@ -2,24 +2,20 @@
 import React, { useEffect, useState } from 'react'
 
 import { useRouter } from 'next/navigation'
-import { useSetRecoilState } from 'recoil'
-import { io, Socket } from 'socket.io-client'
 
 import Button from '@/components/common/Button'
 import EnterNicknameModal from '@/components/common/EnterNicknameModal'
 import Input from '@/components/common/Input'
 import Label from '@/components/common/Label'
-import { gameState } from '@/recoil/gameRecoil'
-import { ClientToServerEvents, ServerToClientEvents } from '@/types/socket'
+import useGame from '@/hooks/useGame'
+import { socket } from '@/lib/socketClient'
 import { randomId } from '@/utils/id'
-
-const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({ multiplex: false })
 
 const MainMenu = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [open, setOpen] = useState(false)
   const router = useRouter()
-  const setGameState = useSetRecoilState(gameState)
+  const { setGame } = useGame()
 
   const enterNick = () => {
     setOpen(true)
@@ -33,7 +29,7 @@ const MainMenu = () => {
 
   useEffect(() => {
     socket.on('gameCreated', data => {
-      setGameState(data)
+      setGame(data)
       router.push(`/${data.id}`)
     })
     return () => {
