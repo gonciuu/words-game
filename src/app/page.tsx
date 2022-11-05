@@ -1,3 +1,5 @@
+'use client'
+
 import MainMenu from './MainMenu'
 
 const HomePage = () => {

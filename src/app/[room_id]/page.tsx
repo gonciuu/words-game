@@ -1,10 +1,12 @@
-import GameView from './GameView'
+'use client'
+
+import GameWrapper from './GameWrapper'
 import WordInput from './WordInput'
 
-const GameScreen = async () => {
+const GameScreen = () => {
   return (
     <div>
-      <GameView />
+      <GameWrapper />
       <WordInput />
     </div>
   )

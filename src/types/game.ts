@@ -1,3 +1,10 @@
+export enum GameState {
+  NOT_FOUND = 'NOT_FOUND',
+  LOBBY = 'LOBBY',
+  GAME = 'GAME',
+  END = 'END',
+}
+
 export interface Player {
   id: string
   name: string
@@ -8,8 +15,8 @@ export interface Game {
   id: string
   players: Player[]
   letters: string
-  started: boolean
-  finished: boolean
+  state: GameState
+  currentPlayerTurn: string
   winner: string | null
 }
 

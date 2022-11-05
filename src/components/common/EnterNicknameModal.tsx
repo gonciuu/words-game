@@ -1,7 +1,7 @@
+'use client'
 import React, { FC, Fragment, useState } from 'react'
 
 import { Transition, Dialog } from '@headlessui/react'
-import { IoMdClose } from 'react-icons/io'
 
 import Button from './Button'
 import Input from './Input'
@@ -9,13 +9,11 @@ import Label from './Label'
 
 type EnterNicknameModalProps = {
   isOpen: boolean
-  closeModal: () => void
   saveNickname: (nickname: string) => void
   submitText?: string
 }
 
 const EnterNicknameModal: FC<EnterNicknameModalProps> = ({
-  closeModal,
   isOpen,
   saveNickname,
   submitText = 'Zapisz',
@@ -23,7 +21,11 @@ const EnterNicknameModal: FC<EnterNicknameModalProps> = ({
   const [nicknameInput, setNicknameInput] = useState<string>('')
   return (
     <Transition show={isOpen} as={Fragment}>
-      <Dialog onClose={closeModal}>
+      <Dialog
+        onClose={() => {
+          console.log('close')
+        }}
+      >
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -54,15 +56,7 @@ const EnterNicknameModal: FC<EnterNicknameModalProps> = ({
                     saveNickname(nicknameInput)
                   }}
                 >
-                  <div className="flex justify-between items-end mb-2">
-                    <Label>Podaj swój nick</Label>
-                    <IoMdClose
-                      color="#ffffff"
-                      size={24}
-                      className="cursor-pointer"
-                      onClick={closeModal}
-                    />
-                  </div>
+                  <Label>Podaj swój nick</Label>
                   <Input
                     placeholder="Nickname"
                     className="mt-1"

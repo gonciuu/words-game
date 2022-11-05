@@ -1,3 +1,5 @@
+'use client'
+
 import LoadingSpinner from '@/components/common/LoadingSpinner'
 
 const Loading = () => {

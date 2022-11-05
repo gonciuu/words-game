@@ -3,6 +3,7 @@ import { Game } from './game'
 export interface ServerToClientEvents {
   gameCreated: (game: Game) => void
   gameJoined: (game: Game) => void
+  userJoined: (user: string) => void
   gameNotFound: () => void
 }
 

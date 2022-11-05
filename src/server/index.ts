@@ -82,18 +82,21 @@ nextApp
       })
 
       socket.on('joinGame', (roomName: string, nickname: string) => {
-        console.log('ESSA', roomName)
         const game = joinGame(roomName, {
           id: socket.id,
           name: nickname,
           isHost: false,
         })
+
         if (!game) {
           socket.emit('gameNotFound')
+          io.to(roomName).emit('gameNotFound')
           return
         }
+
         socket.join(roomName)
         io.to(roomName).emit('gameJoined', game)
+        socket.broadcast.to(roomName).emit('userJoined', 'essa')
       })
       // socket.on('disconnect', () => {
       //   socket.rooms.forEach(room => {

@@ -58,7 +58,10 @@
       ],
       "@/context/*": [
         "src/context/*"
-      ]
+      ],
+      "@/recoil/*": [
+        "src/recoil/*"
+      ],
     },
     "plugins": [
       {

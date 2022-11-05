@@ -1,15 +1,15 @@
-import { Games, Game, Player } from '@/types/game'
+import { Games, Game, Player, GameState } from '../types/game'
 
 export const games: Games = {}
 
 export const createGame = (id: string, player: Player): Game => {
-  const game = {
+  const game: Game = {
     id,
     players: [player],
     letters: '',
-    started: false,
-    finished: false,
     winner: null,
+    state: GameState.LOBBY,
+    currentPlayerTurn: player.id,
   }
   games[id] = game
   return game
