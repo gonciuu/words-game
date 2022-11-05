@@ -13,11 +13,13 @@ type InputProps = {
   required?: boolean
   type?: HTMLInputTypeAttribute | undefined
   onEnter?: (message: string) => void
+  onChange?: (message: string) => void
 }
 
 const Input: FC<InputProps> = forwardRef(
-  ({ className, onEnter, placeholder, required, type }, ref?: any) => (
+  ({ className, onEnter, placeholder, required, type, onChange }, ref?: any) => (
     <input
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       ref={ref}
       type={type}
       className={clsx(
@@ -31,6 +33,10 @@ const Input: FC<InputProps> = forwardRef(
           // eslint-disable-next-line @typescript-eslint/no-unused-expressions
           onEnter && onEnter(e.currentTarget.value)
         }
+      }}
+      onChange={e => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        onChange && onChange(e.currentTarget.value)
       }}
     />
   )

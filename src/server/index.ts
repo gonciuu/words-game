@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import fs from 'fs'
 import { createServer } from 'http'
 
@@ -5,6 +6,15 @@ import bodyParser from 'body-parser'
 import express from 'express'
 import next from 'next'
 import { Server } from 'socket.io'
+
+import {
+  ClientToServerEvents,
+  InterServerEvents,
+  ServerToClientEvents,
+  SocketData,
+} from '@/types/socket'
+
+import { createGame, joinGame } from './games'
 const dev = process.env.NODE_ENV !== 'production'
 
 const nextApp = next({ dev })
@@ -16,7 +26,9 @@ const jsonParser = bodyParser.json()
 app.use(jsonParser)
 
 const server = createServer(app)
-const io = new Server(server)
+const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(
+  server
+)
 
 // read sjp file words
 const array = fs
@@ -55,11 +67,41 @@ nextApp
     })
 
     io.on('connection', socket => {
-      console.log('a user connected', socket.id)
-      socket.on('message', (message: string) => {
-        console.log('message', message)
+      socket.on('createGame', (roomName: string, nickname: string) => {
+        if (socket.rooms.has(roomName)) {
+          return
+        }
+
+        socket.join(roomName)
+        const game = createGame(roomName, {
+          id: socket.id,
+          name: nickname,
+          isHost: true,
+        })
+        io.to(roomName).emit('gameCreated', game)
       })
+
+      socket.on('joinGame', (roomName: string, nickname: string) => {
+        console.log('ESSA', roomName)
+        const game = joinGame(roomName, {
+          id: socket.id,
+          name: nickname,
+          isHost: false,
+        })
+        if (!game) {
+          socket.emit('gameNotFound')
+          return
+        }
+        socket.join(roomName)
+        io.to(roomName).emit('gameJoined', game)
+      })
+      // socket.on('disconnect', () => {
+      //   socket.rooms.forEach(room => {
+      //     leaveGame(room, socket.id)
+      //   })
+      // })
     })
+
     server.listen(port)
     app.get('*', (req, res): any => {
       return nextHandler(req, res)
