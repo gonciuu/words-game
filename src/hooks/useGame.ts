@@ -19,6 +19,10 @@ const useGame = () => {
     if (game) socket.emit('startGame', game.id)
   }
 
+  const onWriteWord = (word: string) => {
+    if (game) socket.emit('writeWord', game.id, word)
+  }
+
   return {
     game,
     setGame,
@@ -26,6 +30,7 @@ const useGame = () => {
     joinGame,
     getGame,
     startGame,
+    onWriteWord,
   }
 }
 export default useGame

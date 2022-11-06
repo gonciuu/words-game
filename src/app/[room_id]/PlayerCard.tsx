@@ -7,9 +7,10 @@ import Image from 'next/image'
 type PlayerCardProps = {
   name: string
   transform: string
+  currentWord: string
 }
 
-const PlayerCard: FC<PlayerCardProps> = ({ name, transform }) => {
+const PlayerCard: FC<PlayerCardProps> = ({ name, transform, currentWord }) => {
   return (
     <div
       className={clsx(
@@ -28,7 +29,7 @@ const PlayerCard: FC<PlayerCardProps> = ({ name, transform }) => {
         height={40}
       />
       <span className="text-center block w-[150px] overflow-hidden whitespace-nowrap text-ellipsis text-sm font-medium ">
-        KOT
+        {currentWord}
       </span>
     </div>
   )

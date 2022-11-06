@@ -22,11 +22,9 @@ const GameWrapper = () => {
 
     socket.on('userJoined', nickname => {
       toast(`${nickname} dołączył do gry`)
-      console.log(nickname)
     })
 
     socket.on('gameJoined', data => {
-      console.log(data)
       setGame(data)
     })
 

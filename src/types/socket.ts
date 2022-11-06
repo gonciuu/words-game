@@ -13,6 +13,7 @@ export interface ClientToServerEvents {
   joinGame: (roomName: string, nickname: string) => void
   getGame: (roomName: string) => void
   startGame: (roomName: string) => void
+  writeWord: (roomName: string, word: string) => void
 }
 
 export interface InterServerEvents {

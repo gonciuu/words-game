@@ -15,7 +15,7 @@ import {
 } from '@/types/socket'
 
 import { PlayerStatus } from '../types/game'
-import { createGame, getGame, joinGame, startGame } from './games'
+import { createGame, getGame, joinGame, onWriteWord, startGame } from './games'
 const dev = process.env.NODE_ENV !== 'production'
 
 const nextApp = next({ dev })
@@ -38,6 +38,19 @@ const array = fs
   .split('\n')
 
 const wordsSet = new Set(array)
+
+const generateRandomLetters = (lettersCount: number): string => {
+  const randomWord = array[Math.floor(Math.random() * array.length)]
+  let randomStartIndex = Math.floor(Math.random() * randomWord.length)
+
+  while (randomStartIndex + lettersCount > randomWord.length) {
+    randomStartIndex--
+  }
+  const randomEndIndex = randomStartIndex + lettersCount
+  const randomLetters = randomWord.slice(randomStartIndex, randomEndIndex)
+
+  return randomLetters
+}
 
 nextApp
   .prepare()
@@ -79,6 +92,7 @@ nextApp
           name: nickname,
           status: PlayerStatus.NOT_PLAYING,
           isHost: true,
+          lives: 3,
         })
         io.to(roomName).emit('gameCreated', game)
       })
@@ -100,6 +114,7 @@ nextApp
           name: nickname,
           status: PlayerStatus.WAITING,
           isHost: false,
+          lives: 3,
         })
 
         if (!game) {
@@ -114,7 +129,8 @@ nextApp
       })
 
       socket.on('startGame', (roomName: string) => {
-        const game = startGame(roomName)
+        const randomLetters = generateRandomLetters(3)
+        const game = startGame(roomName, randomLetters)
 
         if (!game) {
           socket.emit('gameNotFound')
@@ -122,6 +138,16 @@ nextApp
         }
 
         io.to(roomName).emit('game', game)
+      })
+
+      socket.on('writeWord', (roomName: string, word: string) => {
+        const game = onWriteWord(roomName, socket.id, word)
+
+        if (!game) {
+          socket.emit('gameNotFound')
+          return
+        }
+        io.in(roomName).emit('game', game)
       })
 
       // socket.on('disconnect', () => {

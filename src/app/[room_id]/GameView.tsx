@@ -5,7 +5,7 @@ import React, { FC, useEffect, useState } from 'react'
 import clsx from 'clsx'
 import Image from 'next/image'
 
-import { Game } from '@/types/game'
+import { Game, PlayerStatus } from '@/types/game'
 
 import PlayerCard from './PlayerCard'
 
@@ -37,7 +37,7 @@ const GameView: FC<GameViewProps> = ({ game }) => {
     }
   }, [])
 
-  const players = game.players
+  const players = game.players.filter(p => p.status === PlayerStatus.PLAYING)
   const step = (2 * Math.PI) / players.length
   const curPlayer = 1
   const onePlayerRotateStep = 360 / players.length
@@ -58,7 +58,7 @@ const GameView: FC<GameViewProps> = ({ game }) => {
               style={{ transform: `rotate(${startAngle + onePlayerRotateStep * curPlayer}deg)` }}
             />
             <div className="absolute w-[80px] h-[80px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center bg-primary-500 border-gray-700 border-8 rounded-full">
-              <span className="font-semibold text-lg leading-[1.5]">HHH</span>
+              <span className="font-semibold text-lg leading-[1.5]">{game.letters}</span>
             </div>
           </div>
         </div>
@@ -67,7 +67,14 @@ const GameView: FC<GameViewProps> = ({ game }) => {
           const x = Math.round(currentCircleWidth + currentCircleWidth * Math.cos(angle) - 75)
           const y = Math.round(currentCircleWidth + currentCircleWidth * Math.sin(angle) - 75)
           const transform = `translate(${x}px, ${y}px)`
-          return <PlayerCard transform={transform} name={player.name} key={player.id} />
+          return (
+            <PlayerCard
+              transform={transform}
+              name={player.name}
+              key={player.id}
+              currentWord={player.currentWord || ''}
+            />
+          )
         })}
       </div>
     </div>

@@ -17,21 +17,29 @@ const WordInput = () => {
   const [nickname, setNickname] = useState('')
   const gameId = usePathname().replaceAll('/', '')
 
-  const { currentPlayer, joinGame, game, startGame } = useGame()
+  const { currentPlayer, joinGame, game, startGame, onWriteWord } = useGame()
 
   useEffect(() => {
     setNickname(localStorage.getItem('nickname') || '')
   }, [currentPlayer])
 
-  const onEnter = async (message: string) => {
-    const res = await axiosClient.post<boolean>('/has-word', { word: message })
-    if (res.data) {
-      if (inputRef.current) {
-        inputRef.current.value = ''
+  const onEnterWord = async (message: string) => {
+    if (game) {
+      if (message.includes(game.letters)) {
+        console.log('word is valid')
+      } else {
+        console.log('word is not valid')
       }
-    } else {
-      if (inputRef.current) {
-        inputRef.current.value = ''
+      return
+      const res = await axiosClient.post<boolean>('/has-word', { word: message })
+      if (res.data) {
+        if (inputRef.current) {
+          inputRef.current.value = ''
+        }
+      } else {
+        if (inputRef.current) {
+          inputRef.current.value = ''
+        }
       }
     }
   }
@@ -50,7 +58,11 @@ const WordInput = () => {
       {currentPlayer?.status === PlayerStatus.PLAYING && (
         <Input
           placeholder="Podaj słowo"
-          onEnter={onEnter}
+          onEnter={onEnterWord}
+          required
+          onChange={e => {
+            onWriteWord(e)
+          }}
           ref={inputRef}
           className="md:w-1/3 w-full text-[22px]"
         />

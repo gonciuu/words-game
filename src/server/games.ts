@@ -42,13 +42,14 @@ export const getGame = (id: string): Game | null => {
   return game
 }
 
-export const startGame = (id: string): Game | null => {
+export const startGame = (id: string, randomLetters: string): Game | null => {
   const game = games[id]
   if (!game) {
     return null
   }
 
   game.state = GameState.GAME
+  game.letters = randomLetters
   game.players.forEach(player => {
     player.status = PlayerStatus.PLAYING
   })
@@ -67,3 +68,19 @@ export const leaveGame = (id: string, player: Player): Game | null => {
   games[id] = game
   return game
 } // Path: src/server/index.ts
+
+export const onWriteWord = (id: string, playerId: string, word: string) => {
+  const game = getGame(id)
+  if (!game) {
+    return
+  }
+  const player = game.players.find(p => p.id === playerId)
+  if (!player) {
+    return
+  }
+
+  player.currentWord = word
+  games[id] = game
+
+  return game
+}

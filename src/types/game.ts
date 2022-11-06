@@ -15,6 +15,8 @@ export interface Player {
   name: string
   status: PlayerStatus
   isHost: boolean
+  lives: number
+  currentWord?: string
 }
 
 export interface Game {
