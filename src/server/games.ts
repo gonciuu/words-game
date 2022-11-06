@@ -1,5 +1,6 @@
-import { Games, Game, Player, GameState } from '../types/game'
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 
+import { Games, Game, Player, GameState } from '../types/game'
 export const games: Games = {}
 
 export const createGame = (id: string, player: Player): Game => {
@@ -18,7 +19,6 @@ export const createGame = (id: string, player: Player): Game => {
 export const joinGame = (id: string, player: Player): Game | null => {
   const game = games[id]
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!game) {
     return null
   }
@@ -29,10 +29,17 @@ export const joinGame = (id: string, player: Player): Game | null => {
   return game
 }
 
+export const getGame = (id: string): Game | null => {
+  const game = games[id]
+  if (!game) {
+    return null
+  }
+  return game
+}
+
 export const leaveGame = (id: string, player: Player): Game | null => {
   const game = games[id]
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!game) {
     return null
   }

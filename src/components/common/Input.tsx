@@ -14,10 +14,11 @@ type InputProps = {
   type?: HTMLInputTypeAttribute | undefined
   onEnter?: (message: string) => void
   onChange?: (message: string) => void
+  defaultValue?: string
 }
 
 const Input: FC<InputProps> = forwardRef(
-  ({ className, onEnter, placeholder, required, type, onChange }, ref?: any) => (
+  ({ className, onEnter, placeholder, required, type, onChange, defaultValue }, ref?: any) => (
     <input
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       ref={ref}
@@ -26,6 +27,7 @@ const Input: FC<InputProps> = forwardRef(
         'border text-sm rounded-lg block w-full py-2.5 px-4 bg-gray-650 border-gray-600 placeholder-gray-200 text-white focus:ring-primary-500 focus:border-primary-500 outline-none',
         className
       )}
+      defaultValue={defaultValue}
       placeholder={placeholder}
       required={required}
       onKeyDown={e => {

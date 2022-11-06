@@ -5,9 +5,15 @@ export enum GameState {
   END = 'END',
 }
 
+export enum PlayerStatus {
+  NOT_PLAYING = 'NOT_PLAYING',
+  WAITING = 'WAITING',
+  PLAYING = 'PLAYING',
+}
 export interface Player {
   id: string
   name: string
+  status: PlayerStatus
   isHost: boolean
 }
 

@@ -41,6 +41,7 @@ const GameView: FC<GameViewProps> = ({ game }) => {
   const step = (2 * Math.PI) / players.length
   const curPlayer = 1
   const onePlayerRotateStep = 360 / players.length
+  const startAngle = 90 - onePlayerRotateStep
 
   return (
     <div className="w-full h-[calc(100vh-100px)]  flex items-center justify-center flex-col">
@@ -54,7 +55,7 @@ const GameView: FC<GameViewProps> = ({ game }) => {
               className="w-full h-full  absolute duration-300"
               fill={true}
               alt="arrow"
-              style={{ transform: `rotate(${onePlayerRotateStep * curPlayer}deg)` }}
+              style={{ transform: `rotate(${startAngle + onePlayerRotateStep * curPlayer}deg)` }}
             />
             <div className="absolute w-[80px] h-[80px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center bg-primary-500 border-gray-700 border-8 rounded-full">
               <span className="font-semibold text-lg leading-[1.5]">HHH</span>

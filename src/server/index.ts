@@ -14,7 +14,8 @@ import {
   SocketData,
 } from '@/types/socket'
 
-import { createGame, joinGame } from './games'
+import { PlayerStatus } from '../types/game'
+import { createGame, getGame, joinGame } from './games'
 const dev = process.env.NODE_ENV !== 'production'
 
 const nextApp = next({ dev })
@@ -76,15 +77,29 @@ nextApp
         const game = createGame(roomName, {
           id: socket.id,
           name: nickname,
+          status: PlayerStatus.NOT_PLAYING,
           isHost: true,
         })
         io.to(roomName).emit('gameCreated', game)
+      })
+
+      socket.on('getGame', (roomName: string) => {
+        const game = getGame(roomName)
+
+        console.log('getGame', game)
+        if (!game) {
+          socket.emit('gameNotFound')
+          return
+        }
+
+        io.to(socket.id).emit('game', game)
       })
 
       socket.on('joinGame', (roomName: string, nickname: string) => {
         const game = joinGame(roomName, {
           id: socket.id,
           name: nickname,
+          status: PlayerStatus.NOT_PLAYING,
           isHost: false,
         })
 
@@ -96,7 +111,7 @@ nextApp
 
         socket.join(roomName)
         io.to(roomName).emit('gameJoined', game)
-        socket.broadcast.to(roomName).emit('userJoined', 'essa')
+        socket.broadcast.to(roomName).emit('userJoined', nickname)
       })
       // socket.on('disconnect', () => {
       //   socket.rooms.forEach(room => {
