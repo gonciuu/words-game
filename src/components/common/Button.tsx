@@ -10,6 +10,7 @@ type ButtonProps = {
   variant?: 'primary' | 'secondary'
   onClick?: () => void
   type?: 'button' | 'submit' | 'reset'
+  disabled?: boolean
 }
 
 const Button: FC<ButtonProps> = ({
@@ -18,10 +19,12 @@ const Button: FC<ButtonProps> = ({
   variant = 'primary',
   onClick,
   type = 'button',
+  disabled = false,
 }) => {
   if (variant === 'primary') {
     return (
       <button
+        disabled={disabled}
         onClick={onClick}
         type={type}
         className={clsx(
@@ -35,6 +38,7 @@ const Button: FC<ButtonProps> = ({
   } else {
     return (
       <button
+        disabled={disabled}
         onClick={onClick}
         type={type}
         className={clsx(

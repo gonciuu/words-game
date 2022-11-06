@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 
-import { Games, Game, Player, GameState } from '../types/game'
+import { Games, Game, Player, GameState, PlayerStatus } from '../types/game'
 export const games: Games = {}
 
 export const createGame = (id: string, player: Player): Game => {
@@ -23,9 +23,14 @@ export const joinGame = (id: string, player: Player): Game | null => {
     return null
   }
 
+  if (game.state === GameState.LOBBY) {
+    player.status = PlayerStatus.PLAYING
+  }
+
   if (!game.players.includes(player)) {
     game.players.push(player)
   }
+
   return game
 }
 
@@ -34,6 +39,20 @@ export const getGame = (id: string): Game | null => {
   if (!game) {
     return null
   }
+  return game
+}
+
+export const startGame = (id: string): Game | null => {
+  const game = games[id]
+  if (!game) {
+    return null
+  }
+
+  game.state = GameState.GAME
+  game.players.forEach(player => {
+    player.status = PlayerStatus.PLAYING
+  })
+  games[id] = game
   return game
 }
 

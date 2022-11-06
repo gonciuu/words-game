@@ -15,12 +15,17 @@ const useGame = () => {
     socket.emit('getGame', roomName)
   }
 
+  const startGame = () => {
+    if (game) socket.emit('startGame', game.id)
+  }
+
   return {
     game,
     setGame,
     currentPlayer,
     joinGame,
     getGame,
+    startGame,
   }
 }
 export default useGame

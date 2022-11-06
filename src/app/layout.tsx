@@ -11,10 +11,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html className={inter.className} lang="pl">
       <head></head>
-      <RecoilRoot>
-        <body className={'bg-gray-700 text-white overflow-x-hidden'}>{children}</body>
-        <ToastContainer toastStyle={{ backgroundColor: '#232323', color: 'white' }} />
-      </RecoilRoot>
+      <body className={'bg-gray-700 text-white overflow-x-hidden'}>
+        <RecoilRoot>
+          {children}
+          <ToastContainer toastStyle={{ backgroundColor: '#232323', color: 'white' }} />
+        </RecoilRoot>
+      </body>
     </html>
   )
 }

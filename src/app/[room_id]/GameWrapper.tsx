@@ -1,4 +1,3 @@
-'use client'
 import React, { useEffect } from 'react'
 
 import Link from 'next/link'
@@ -16,7 +15,7 @@ import Loading from './loading'
 const GameWrapper = () => {
   const gameId = usePathname().replaceAll('/', '')
 
-  const { game, setGame, getGame } = useGame()
+  const { game, setGame, getGame, currentPlayer } = useGame()
 
   useEffect(() => {
     getGame(gameId)
@@ -61,9 +60,13 @@ const GameWrapper = () => {
 
   if (game?.state === GameState.LOBBY) {
     return (
-      <div className="w-full h-[calc(100vh-100px)]  flex items-center justify-center flex-col">
-        Lobby. Oczekiwanie na strart gry
-      </div>
+      <>
+        {!currentPlayer?.isHost && (
+          <div className="w-full h-[calc(100vh-100px)]  flex items-center justify-center flex-col">
+            Lobby. Oczekiwanie na strart gry
+          </div>
+        )}
+      </>
     )
   }
 
