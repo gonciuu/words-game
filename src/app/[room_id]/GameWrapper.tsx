@@ -28,7 +28,7 @@ const GameWrapper = () => {
       setGame(data)
     })
 
-    socket.on('game', (g: Game) => {
+    socket.on('game', (g: Game | undefined) => {
       setGame(g)
     })
 
@@ -37,11 +37,18 @@ const GameWrapper = () => {
       console.log('game not found')
     })
 
+    socket.on('wordNotFound', word => {
+      toast(`Słowo ${word} nie istanieje w słowniku`, {
+        type: 'error',
+      })
+    })
+
     return () => {
       socket.off('gameJoined')
       socket.off('gameNotFound')
       socket.off('userJoined')
       socket.off('game')
+      socket.off('wordNotFound')
     }
   }, [])
 

@@ -23,6 +23,12 @@ const useGame = () => {
     if (game) socket.emit('writeWord', game.id, word)
   }
 
+  const onGuessWord = (word: string) => {
+    if (game) socket.emit('guessWord', game.id, word)
+  }
+
+  const playerOnTurn = game?.players.find(player => player.id === game.currentPlayerTurn)
+
   return {
     game,
     setGame,
@@ -31,6 +37,8 @@ const useGame = () => {
     getGame,
     startGame,
     onWriteWord,
+    playerOnTurn,
+    onGuessWord,
   }
 }
 export default useGame

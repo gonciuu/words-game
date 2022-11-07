@@ -9,7 +9,6 @@ import { usePathname } from 'next/navigation'
 import Button from '@/components/common/Button'
 import Input from '@/components/common/Input'
 import useGame from '@/hooks/useGame'
-import axiosClient from '@/lib/axiosClient'
 import { GameState, PlayerStatus } from '@/types/game'
 
 const WordInput = () => {
@@ -17,7 +16,8 @@ const WordInput = () => {
   const [nickname, setNickname] = useState('')
   const gameId = usePathname().replaceAll('/', '')
 
-  const { currentPlayer, joinGame, game, startGame, onWriteWord } = useGame()
+  const { currentPlayer, joinGame, game, startGame, onWriteWord, playerOnTurn, onGuessWord } =
+    useGame()
 
   useEffect(() => {
     setNickname(localStorage.getItem('nickname') || '')
@@ -26,21 +26,16 @@ const WordInput = () => {
   const onEnterWord = async (message: string) => {
     if (game) {
       if (message.includes(game.letters)) {
-        console.log('word is valid')
+        onGuessWord(message)
+        if (inputRef.current != null) {
+          inputRef.current.value = ''
+        }
       } else {
-        console.log('word is not valid')
+        if (inputRef.current != null) {
+          inputRef.current.value = ''
+        }
       }
       return
-      const res = await axiosClient.post<boolean>('/has-word', { word: message })
-      if (res.data) {
-        if (inputRef.current) {
-          inputRef.current.value = ''
-        }
-      } else {
-        if (inputRef.current) {
-          inputRef.current.value = ''
-        }
-      }
     }
   }
   const joinToGame = (e: FormEvent<HTMLFormElement>) => {
@@ -53,20 +48,26 @@ const WordInput = () => {
     startGame()
   }
 
+  const isMyTurn = playerOnTurn?.id === currentPlayer?.id
+
   return (
     <div className="w-full px-4 h-[100px] fixed bottom-0 left-1/2 translate-x-[-50%] bg-gray-900 flex items-center justify-center">
-      {currentPlayer?.status === PlayerStatus.PLAYING && (
-        <Input
-          placeholder="Podaj słowo"
-          onEnter={onEnterWord}
-          required
-          onChange={e => {
-            onWriteWord(e)
-          }}
-          ref={inputRef}
-          className="md:w-1/3 w-full text-[22px]"
-        />
-      )}
+      {currentPlayer?.status === PlayerStatus.PLAYING &&
+        game?.state === GameState.GAME &&
+        (isMyTurn ? (
+          <Input
+            placeholder="Podaj słowo"
+            onEnter={onEnterWord}
+            required
+            onChange={e => {
+              onWriteWord(e)
+            }}
+            ref={inputRef}
+            className="md:w-1/3 w-full text-[22px]"
+          />
+        ) : (
+          <div className="text-white text-[22px]">{playerOnTurn?.name} jest na ruchu</div>
+        ))}
 
       {currentPlayer?.status === PlayerStatus.WAITING && (
         <div className="text-white text-2xl">Czekaj na swoją kolej</div>

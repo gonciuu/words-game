@@ -5,7 +5,9 @@ export interface ServerToClientEvents {
   gameJoined: (game: Game) => void
   userJoined: (user: string) => void
   gameNotFound: () => void
-  game: (game: Game) => void
+  game: (game: Game | undefined) => void
+  wordNotFound: (word: string) => void
+  timer: (timer: number) => void
 }
 
 export interface ClientToServerEvents {
@@ -14,6 +16,7 @@ export interface ClientToServerEvents {
   getGame: (roomName: string) => void
   startGame: (roomName: string) => void
   writeWord: (roomName: string, word: string) => void
+  guessWord: (roomName: string, word: string) => void
 }
 
 export interface InterServerEvents {

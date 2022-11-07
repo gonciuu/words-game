@@ -15,7 +15,15 @@ import {
 } from '@/types/socket'
 
 import { PlayerStatus } from '../types/game'
-import { createGame, getGame, joinGame, onWriteWord, startGame } from './games'
+import {
+  createGame,
+  getGame,
+  joinGame,
+  onGuessWord,
+  onWriteWord,
+  startGame,
+  timeIsUp,
+} from './games'
 const dev = process.env.NODE_ENV !== 'production'
 
 const nextApp = next({ dev })
@@ -52,34 +60,11 @@ const generateRandomLetters = (lettersCount: number): string => {
   return randomLetters
 }
 
+const timers: { [key: string]: NodeJS.Timer } = {}
+
 nextApp
   .prepare()
   .then(() => {
-    app.get('/random-letters/:lettersCount', (req, res) => {
-      const { lettersCount } = req.params
-      const lettersCountInt = parseInt(lettersCount)
-
-      const randomWord = array[Math.floor(Math.random() * array.length)]
-      let randomStartIndex = Math.floor(Math.random() * randomWord.length)
-
-      while (randomStartIndex + lettersCountInt > randomWord.length) {
-        randomStartIndex--
-      }
-      const randomEndIndex = randomStartIndex + lettersCountInt
-      const randomLetters = randomWord.slice(randomStartIndex, randomEndIndex)
-
-      return res.send(randomLetters)
-    })
-
-    app.post('/has-word', async (req, res) => {
-      const { word } = req.body as { word: string }
-      if (!word || word.length < 3) {
-        return res.send(false)
-      }
-      const hasWord = wordsSet.has(word)
-      return res.send(hasWord)
-    })
-
     io.on('connection', socket => {
       socket.on('createGame', (roomName: string, nickname: string) => {
         if (socket.rooms.has(roomName)) {
@@ -137,6 +122,19 @@ nextApp
           return
         }
 
+        timers[roomName] = setInterval(() => {
+          game.time--
+          if (game.time === 0) {
+            const g = timeIsUp(roomName)
+            if (g) {
+              io.in(roomName).emit('game', g)
+              io.in(roomName).emit('timer', g.time)
+            }
+            return
+          }
+          io.in(roomName).emit('timer', game.time)
+        }, 1000)
+
         io.to(roomName).emit('game', game)
       })
 
@@ -147,6 +145,42 @@ nextApp
           socket.emit('gameNotFound')
           return
         }
+        io.in(roomName).emit('game', game)
+      })
+
+      socket.on('guessWord', (roomName: string, word: string) => {
+        const hasWord = wordsSet.has(word)
+
+        if (!hasWord) {
+          socket.emit('wordNotFound', word)
+          return
+        }
+
+        const randomLetters = generateRandomLetters(3)
+        const game = onGuessWord(roomName, randomLetters)
+
+        if (!game) {
+          socket.emit('gameNotFound')
+          return
+        }
+
+        clearInterval(timers[roomName])
+        game.time = 10
+        io.in(roomName).emit('timer', game.time)
+        timers[roomName] = setInterval(() => {
+          if (game.time === 0) {
+            const g = timeIsUp(roomName)
+            if (g) {
+              g.time = 10
+              io.in(roomName).emit('game', g)
+              io.in(roomName).emit('timer', g.time)
+            }
+            return
+          }
+          game.time--
+          io.in(roomName).emit('timer', game.time)
+        }, 1000)
+
         io.in(roomName).emit('game', game)
       })
 

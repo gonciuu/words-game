@@ -26,6 +26,7 @@ export interface Game {
   state: GameState
   currentPlayerTurn: string
   winner: string | null
+  time: number
 }
 
 export interface Games {

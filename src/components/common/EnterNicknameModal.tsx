@@ -1,5 +1,5 @@
 'use client'
-import React, { FC, Fragment, useState } from 'react'
+import React, { FC, Fragment, useEffect, useState } from 'react'
 
 import { Transition, Dialog } from '@headlessui/react'
 
@@ -19,11 +19,16 @@ const EnterNicknameModal: FC<EnterNicknameModalProps> = ({
   submitText = 'Zapisz',
 }) => {
   const [nicknameInput, setNicknameInput] = useState<string>('')
+
+  useEffect(() => {
+    setNicknameInput(localStorage.getItem('nickname') || '')
+  }, [])
+
   return (
     <Transition show={isOpen} as={Fragment}>
       <Dialog
         onClose={() => {
-          console.log('close')
+          //close dialog
         }}
       >
         <Transition.Child
@@ -60,6 +65,7 @@ const EnterNicknameModal: FC<EnterNicknameModalProps> = ({
                   <Input
                     placeholder="Nickname"
                     className="mt-1"
+                    defaultValue={nicknameInput}
                     onChange={setNicknameInput}
                     required
                   />

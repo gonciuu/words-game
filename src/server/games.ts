@@ -11,6 +11,7 @@ export const createGame = (id: string, player: Player): Game => {
     winner: null,
     state: GameState.LOBBY,
     currentPlayerTurn: player.id,
+    time: 10,
   }
   games[id] = game
   return game
@@ -53,7 +54,9 @@ export const startGame = (id: string, randomLetters: string): Game | null => {
   game.players.forEach(player => {
     player.status = PlayerStatus.PLAYING
   })
+
   games[id] = game
+
   return game
 }
 
@@ -80,6 +83,53 @@ export const onWriteWord = (id: string, playerId: string, word: string) => {
   }
 
   player.currentWord = word
+  games[id] = game
+
+  return game
+}
+
+export const onGuessWord = (gameId: string, newLetters: string) => {
+  const game = getGame(gameId)
+  if (!game) {
+    return
+  }
+
+  const playerIndex = game.players.findIndex(p => p.id === game.currentPlayerTurn)
+
+  if (game.players.length === playerIndex + 1) {
+    game.currentPlayerTurn = game.players[0].id
+  } else {
+    game.currentPlayerTurn = game.players[playerIndex + 1].id
+  }
+
+  game.letters = newLetters
+
+  return game
+}
+
+export const timeIsUp = (id: string) => {
+  const game = getGame(id)
+  if (!game) {
+    return
+  }
+
+  game.time = 10
+
+  const playerIndex = game.players.findIndex(p => p.id === game.currentPlayerTurn)
+  const player = game.players[playerIndex]
+
+  if (player.lives === 1) {
+    player.lives = 0
+  } else {
+    player.lives -= 1
+  }
+
+  if (game.players.length === playerIndex + 1) {
+    game.currentPlayerTurn = game.players[0].id
+  } else {
+    game.currentPlayerTurn = game.players[playerIndex + 1].id
+  }
+
   games[id] = game
 
   return game

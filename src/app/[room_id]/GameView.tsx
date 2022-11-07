@@ -5,6 +5,7 @@ import React, { FC, useEffect, useState } from 'react'
 import clsx from 'clsx'
 import Image from 'next/image'
 
+import { socket } from '@/lib/socketClient'
 import { Game, PlayerStatus } from '@/types/game'
 
 import PlayerCard from './PlayerCard'
@@ -18,6 +19,7 @@ type GameViewProps = {
 }
 const GameView: FC<GameViewProps> = ({ game }) => {
   const [currentCircleWidth, setCurrentCircleWidth] = useState<number>(250)
+  const [timer, setTimer] = useState<number>(10)
 
   const onResize = () => {
     if (window.innerWidth < 768 && window.innerWidth > 640) {
@@ -31,20 +33,25 @@ const GameView: FC<GameViewProps> = ({ game }) => {
 
   useEffect(() => {
     onResize()
+    socket.on('timer', time => {
+      setTimer(time)
+    })
     window.addEventListener('resize', onResize)
     return () => {
       window.removeEventListener('resize', onResize)
+      socket.off('timer')
     }
   }, [])
 
   const players = game.players.filter(p => p.status === PlayerStatus.PLAYING)
   const step = (2 * Math.PI) / players.length
-  const curPlayer = 1
+  const curPlayer = players.findIndex(p => p.id === game.currentPlayerTurn) + 1
   const onePlayerRotateStep = 360 / players.length
   const startAngle = 90 - onePlayerRotateStep
 
   return (
     <div className="w-full h-[calc(100vh-100px)]  flex items-center justify-center flex-col">
+      <h2>Czas do końca: {timer}</h2>
       <div
         className={clsx(`relative rounded-full`, `${circleSize} ${circleSizeMd} ${circleSizeSm}`)}
       >
@@ -73,6 +80,7 @@ const GameView: FC<GameViewProps> = ({ game }) => {
               name={player.name}
               key={player.id}
               currentWord={player.currentWord || ''}
+              lives={player.lives}
             />
           )
         })}
