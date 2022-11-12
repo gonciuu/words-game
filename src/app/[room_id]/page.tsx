@@ -1,7 +1,7 @@
 'use client'
 
-import GameWrapper from './GameWrapper'
-import WordInput from './WordInput'
+import GameWrapper from './components/GameWrapper'
+import WordInput from './components/WordInput'
 
 const GameScreen = () => {
   return (

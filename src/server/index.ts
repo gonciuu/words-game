@@ -20,6 +20,7 @@ import {
   getGame,
   joinGame,
   onGuessWord,
+  onPlayerLeave,
   onWriteWord,
   startGame,
   timeIsUp,
@@ -66,6 +67,17 @@ nextApp
   .prepare()
   .then(() => {
     io.on('connection', socket => {
+      const getRoomId = () => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const joinedRoom: string | undefined = Array.from(socket.rooms.values()).find(
+          room => room !== socket.id
+        )
+
+        if (!joinedRoom) return socket.id
+
+        return joinedRoom
+      }
+
       socket.on('createGame', (roomName: string, nickname: string) => {
         if (socket.rooms.has(roomName)) {
           return
@@ -184,11 +196,13 @@ nextApp
         io.in(roomName).emit('game', game)
       })
 
-      // socket.on('disconnect', () => {
-      //   socket.rooms.forEach(room => {
-      //     leaveGame(room, socket.id)
-      //   })
-      // })
+      socket.on('disconnecting', () => {
+        const roomId = getRoomId()
+        console.log('disconnecting : ', roomId)
+
+        const g = onPlayerLeave(roomId, socket.id)
+        io.in(roomId).emit('game', g)
+      })
     })
 
     server.listen(port)

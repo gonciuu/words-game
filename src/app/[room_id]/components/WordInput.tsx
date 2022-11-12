@@ -69,11 +69,11 @@ const WordInput = () => {
           <div className="text-white text-[22px]">{playerOnTurn?.name} jest na ruchu</div>
         ))}
 
-      {currentPlayer?.status === PlayerStatus.WAITING && (
+      {currentPlayer?.status === PlayerStatus.WAITING && game?.state !== GameState.END && (
         <div className="text-white text-2xl">Czekaj na swoją kolej</div>
       )}
 
-      {currentPlayer?.isHost && game?.state === GameState.LOBBY && (
+      {currentPlayer?.isHost && (game?.state === GameState.LOBBY || game?.state === GameState.END) && (
         <div>
           <h3 className="text-sm text-center">
             Jesteś hostem. Rozpocznij grę. <br />

@@ -9,13 +9,14 @@ import useGame from '@/hooks/useGame'
 import { socket } from '@/lib/socketClient'
 import { Game, GameState } from '@/types/game'
 
+import Loading from '../loading'
 import GameView from './GameView'
-import Loading from './loading'
+import Scoreboard from './Scoreboard'
 
 const GameWrapper = () => {
   const gameId = usePathname().replaceAll('/', '')
 
-  const { game, setGame, getGame, currentPlayer } = useGame()
+  const { game, setGame, getGame } = useGame()
 
   useEffect(() => {
     getGame(gameId)
@@ -52,6 +53,15 @@ const GameWrapper = () => {
     }
   }, [])
 
+  if (game?.state === GameState.END) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full">
+        <h1 className="text-3xl mt-4">Koniec gry</h1>
+        <h2>Zwycięzca {game.players.find(p => p.id === game.winner)?.name}</h2>
+      </div>
+    )
+  }
+
   if (game?.state === GameState.NOT_FOUND) {
     return (
       <div className="flex flex-col items-center justify-center h-full">
@@ -66,11 +76,10 @@ const GameWrapper = () => {
   if (game?.state === GameState.LOBBY) {
     return (
       <>
-        {!currentPlayer?.isHost && (
-          <div className="w-full h-[calc(100vh-100px)]  flex items-center justify-center flex-col">
-            Lobby. Oczekiwanie na strart gry
-          </div>
-        )}
+        <div className="w-full h-[calc(100vh-100px)]  flex items-center justify-center flex-col">
+          <h1 className="font-semibold text-4xl">LOBBY</h1>
+          <Scoreboard />
+        </div>
       </>
     )
   }

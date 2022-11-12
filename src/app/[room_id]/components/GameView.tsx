@@ -51,7 +51,6 @@ const GameView: FC<GameViewProps> = ({ game }) => {
 
   return (
     <div className="w-full h-[calc(100vh-100px)]  flex items-center justify-center flex-col">
-      <h2>Czas do końca: {timer}</h2>
       <div
         className={clsx(`relative rounded-full`, `${circleSize} ${circleSizeMd} ${circleSizeSm}`)}
       >
@@ -85,6 +84,9 @@ const GameView: FC<GameViewProps> = ({ game }) => {
           )
         })}
       </div>
+      <h2 className="mt-20 text-xl fixed left-[50%] top-0 bg-primary-600 -translate-x-[50%] p-3 rounded-lg font-semibold">
+        Czas do końca: {timer}
+      </h2>
     </div>
   )
 }
