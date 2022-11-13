@@ -3,7 +3,6 @@ import React from 'react'
 import useGame from '@/hooks/useGame'
 
 const Scoreboard = () => {
-  //get players from usegame hook
   const { game } = useGame()
   return (
     <div>

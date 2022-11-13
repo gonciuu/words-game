@@ -14,7 +14,7 @@ import {
   SocketData,
 } from '@/types/socket'
 
-import { PlayerStatus } from '../types/game'
+import { GameState, PlayerStatus } from '../types/game'
 import {
   createGame,
   getGame,
@@ -68,13 +68,10 @@ nextApp
   .then(() => {
     io.on('connection', socket => {
       const getRoomId = () => {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const joinedRoom: string | undefined = Array.from(socket.rooms.values()).find(
           room => room !== socket.id
         )
-
         if (!joinedRoom) return socket.id
-
         return joinedRoom
       }
 
@@ -89,18 +86,13 @@ nextApp
           name: nickname,
           status: PlayerStatus.NOT_PLAYING,
           isHost: true,
-          lives: 3,
+          lives: 20,
         })
         io.to(roomName).emit('gameCreated', game)
       })
 
       socket.on('getGame', (roomName: string) => {
         const game = getGame(roomName)
-
-        if (!game) {
-          socket.emit('gameNotFound')
-          return
-        }
 
         io.to(socket.id).emit('game', game)
       })
@@ -134,14 +126,15 @@ nextApp
           return
         }
 
+        clearInterval(timers[roomName])
+
         timers[roomName] = setInterval(() => {
           game.time--
           if (game.time === 0) {
             const g = timeIsUp(roomName)
-            if (g) {
-              io.in(roomName).emit('game', g)
-              io.in(roomName).emit('timer', g.time)
-            }
+
+            io.in(roomName).emit('game', g)
+            io.in(roomName).emit('timer', g.time)
             return
           }
           io.in(roomName).emit('timer', game.time)
@@ -164,44 +157,42 @@ nextApp
         const hasWord = wordsSet.has(word)
 
         if (!hasWord) {
-          socket.emit('wordNotFound', word)
+          socket.emit('badWord', word)
+
           return
         }
 
         const randomLetters = generateRandomLetters(3)
         const game = onGuessWord(roomName, randomLetters)
 
-        if (!game) {
-          socket.emit('gameNotFound')
-          return
-        }
-
         clearInterval(timers[roomName])
         game.time = 10
+        if (game.state === GameState.END) {
+          io.in(roomName).emit('game', game)
+          return
+        }
         io.in(roomName).emit('timer', game.time)
         timers[roomName] = setInterval(() => {
           if (game.time === 0) {
             const g = timeIsUp(roomName)
-            if (g) {
-              g.time = 10
-              io.in(roomName).emit('game', g)
-              io.in(roomName).emit('timer', g.time)
-            }
+            g.time = 10
+            io.in(roomName).emit('game', g)
+            io.in(roomName).emit('timer', g.time)
             return
           }
           game.time--
           io.in(roomName).emit('timer', game.time)
         }, 1000)
-
+        io.in(roomName).emit('correctWord')
         io.in(roomName).emit('game', game)
       })
 
       socket.on('disconnecting', () => {
         const roomId = getRoomId()
-        console.log('disconnecting : ', roomId)
 
         const g = onPlayerLeave(roomId, socket.id)
-        io.in(roomId).emit('game', g)
+        socket.broadcast.to(roomId).emit('userLeft', g?.player ?? '')
+        io.to(roomId).emit('game', g?.g)
       })
     })
 

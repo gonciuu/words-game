@@ -3,6 +3,31 @@
 import { Games, Game, Player, GameState, PlayerStatus } from '../types/game'
 export const games: Games = {}
 
+const playingPlayers = (game: Game): Player[] => {
+  return game.players.filter(player => player.status === PlayerStatus.PLAYING)
+}
+
+export const getGame = (id: string): Game => {
+  const game = games[id]
+  return game
+}
+
+const nextPlayer = (game: Game): Game => {
+  const playersInGame = playingPlayers(game)
+  console.log(playersInGame.length)
+  const playerOnTurnIndex = playersInGame.findIndex(p => p.id === game.currentPlayerTurn)
+
+  if (playersInGame.length === playerOnTurnIndex + 1) {
+    console.log('chuj player')
+    game.currentPlayerTurn = playersInGame[0].id
+  } else {
+    console.log('kurwa player')
+    game.currentPlayerTurn = playersInGame[playerOnTurnIndex + 1].id
+  }
+
+  return game
+}
+
 export const createGame = (id: string, player: Player): Game => {
   const game: Game = {
     id,
@@ -35,14 +60,6 @@ export const joinGame = (id: string, player: Player): Game | null => {
   return game
 }
 
-export const getGame = (id: string): Game | null => {
-  const game = games[id]
-  if (!game) {
-    return null
-  }
-  return game
-}
-
 export const startGame = (id: string, randomLetters: string): Game | null => {
   const game = games[id]
   if (!game) {
@@ -71,13 +88,10 @@ export const leaveGame = (id: string, player: Player): Game | null => {
   game.players = game.players.filter(p => p !== player)
   games[id] = game
   return game
-} // Path: src/server/index.ts
-
+}
 export const onWriteWord = (id: string, playerId: string, word: string) => {
   const game = getGame(id)
-  if (!game) {
-    return
-  }
+
   const player = game.players.find(p => p.id === playerId)
   if (!player) {
     return
@@ -91,60 +105,41 @@ export const onWriteWord = (id: string, playerId: string, word: string) => {
 
 export const onGuessWord = (gameId: string, newLetters: string) => {
   const game = getGame(gameId)
-  if (!game) {
-    return
-  }
-
-  const playersAvailable = game.players.filter(p => p.status === PlayerStatus.PLAYING)
-  const playerIndex = playersAvailable.findIndex(p => p.id === game.currentPlayerTurn)
-
-  if (playersAvailable.length === playerIndex + 1) {
-    game.currentPlayerTurn = playersAvailable[0].id
-  } else {
-    game.currentPlayerTurn = playersAvailable[playerIndex + 1].id
-  }
-
+  nextPlayer(game)
   game.letters = newLetters
+
+  games[gameId] = game
 
   return game
 }
 
 export const timeIsUp = (id: string) => {
   const game = getGame(id)
-  if (!game) {
-    return
-  }
-
-  game.time = 10
-
-  const playerIndex = game.players.findIndex(p => p.id === game.currentPlayerTurn)
-  const player = game.players[playerIndex]
+  const playersInGame = playingPlayers(game)
+  const playerIndex = playersInGame.findIndex(p => p.id === game.currentPlayerTurn)
+  const player = playersInGame[playerIndex]
 
   if (player.lives === 1) {
     player.lives = 0
     player.status = PlayerStatus.WAITING
-    const playersInGame = game.players.filter(p => p.status === PlayerStatus.PLAYING)
     if (playersInGame.length === 1) {
       game.state = GameState.END
       game.winner = playersInGame[0].id
+      return game
     }
     games[id] = game
-    return game
   } else {
     player.lives -= 1
   }
 
-  const playersAvailable = game.players.filter(p => p.status === PlayerStatus.PLAYING)
-
-  if (playersAvailable.length <= 1) {
+  if (playersInGame.length <= 1) {
     games[id] = game
     return game
   }
-  if (playersAvailable.length === playerIndex + 1) {
-    game.currentPlayerTurn = playersAvailable[0].id
-  } else {
-    game.currentPlayerTurn = playersAvailable[playerIndex + 1].id
-  }
+  nextPlayer(game)
+
+  game.time = 10
+  games[id] = game
 
   return game
 }
@@ -155,12 +150,20 @@ export const onPlayerLeave = (id: string, playerId: string) => {
     return
   }
 
+  const player = game.players.find(p => p.id === playerId)
+
   game.players.splice(
     game.players.findIndex(function (i) {
       return i.id === playerId
     }),
     1
   )
+
+  if (game.players.length < 2) {
+    game.state = GameState.END
+    game.winner = game.players[0].id
+  }
+
   games[id] = game
-  return game
-} // Path: src/server/socket.ts
+  return { g: game, player: player?.name ?? '' }
+}

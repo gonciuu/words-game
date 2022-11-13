@@ -4,9 +4,11 @@ export interface ServerToClientEvents {
   gameCreated: (game: Game) => void
   gameJoined: (game: Game) => void
   userJoined: (user: string) => void
+  userLeft: (user: string) => void
   gameNotFound: () => void
   game: (game: Game | undefined) => void
-  wordNotFound: (word: string) => void
+  badWord: (word: string) => void
+  correctWord: () => void
   timer: (timer: number) => void
 }
 

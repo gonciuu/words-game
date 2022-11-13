@@ -1,3 +1,4 @@
+'use client'
 import React, { useEffect } from 'react'
 
 import Link from 'next/link'
@@ -5,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { toast } from 'react-toastify'
 
 import Button from '@/components/common/Button'
+import useAudio from '@/hooks/useAudio'
 import useGame from '@/hooks/useGame'
 import { socket } from '@/lib/socketClient'
 import { Game, GameState } from '@/types/game'
@@ -17,6 +19,7 @@ const GameWrapper = () => {
   const gameId = usePathname().replaceAll('/', '')
 
   const { game, setGame, getGame } = useGame()
+  const { playCorrect, playWrong } = useAudio()
 
   useEffect(() => {
     getGame(gameId)
@@ -38,10 +41,19 @@ const GameWrapper = () => {
       console.log('game not found')
     })
 
-    socket.on('wordNotFound', word => {
+    socket.on('badWord', async word => {
       toast(`Słowo ${word} nie istanieje w słowniku`, {
         type: 'error',
       })
+      await playWrong()
+    })
+
+    socket.on('correctWord', async () => {
+      await playCorrect()
+    })
+
+    socket.on('userLeft', nickname => {
+      toast(`${nickname} opuścił grę`)
     })
 
     return () => {
@@ -49,7 +61,8 @@ const GameWrapper = () => {
       socket.off('gameNotFound')
       socket.off('userJoined')
       socket.off('game')
-      socket.off('wordNotFound')
+      socket.off('badWord')
+      socket.off('correctWord')
     }
   }, [])
 
